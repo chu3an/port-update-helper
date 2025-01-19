@@ -10,7 +10,7 @@ COPY ./app /app
 COPY entrypoint /entrypoint
 
 RUN \
-    apk add --no-cache tzdata && \
+    apk add --no-cache tzdata curl && \
     pip install flask requests && \
     chmod +x /entrypoint && \
     chmod +x /app/routine.sh
