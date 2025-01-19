@@ -2,7 +2,8 @@ FROM python:3.10-alpine3.21
 LABEL \
     org.opencontainers.image.authors="chu3an@GitHub" \
     org.opencontainers.image.title="port-update-helper" \
-    org.opencontainers.image.url="https://github.com/chu3an/port-update-helper"
+    org.opencontainers.image.url="https://github.com/chu3an/port-update-helper" \
+    org.opencontainers.image.description="Update qBittorrent listening port in fast way with the forwarded port by Gluetun"
 
 WORKDIR /app
 
