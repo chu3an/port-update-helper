@@ -1,0 +1,4 @@
+#!/bin/ash
+
+/app/routine.sh &
+python /app/app.py
