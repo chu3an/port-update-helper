@@ -6,7 +6,7 @@ LABEL \
 
 WORKDIR /app
 
-COPY app /app
+COPY ./app /app
 COPY entrypoint /entrypoint
 
 RUN \
