@@ -6,14 +6,17 @@ LABEL \
 
 WORKDIR /app
 
-RUN \
-    apk add --no-cache tzdata && \
-    pip install flask requests
-
 COPY app /app
 COPY entrypoint /entrypoint
 
+RUN \
+    apk add --no-cache tzdata && \
+    pip install flask requests && \
+    chmod +x entrypoint && \
+    chmod +x /app/routine.sh
+
 ENV TZ=Asia/Tokyo
+
 EXPOSE 9080
 
-CMD ["/entrypoint"]
+ENTRYPOINT ["/entrypoint"]
