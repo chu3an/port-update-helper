@@ -12,7 +12,7 @@ COPY entrypoint /entrypoint
 RUN \
     apk add --no-cache tzdata && \
     pip install flask requests && \
-    chmod +x entrypoint && \
+    chmod +x /entrypoint && \
     chmod +x /app/routine.sh
 
 ENV TZ=Asia/Tokyo
