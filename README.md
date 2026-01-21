@@ -53,16 +53,23 @@ Replace the following IP address, username, and password with your own.
     CHK_INTERVAL=5
     TZ=Asia/Tokyo
     ```
-3. Create `docker-compose.yaml` :
+3. Create `compose.yaml` :
     ```yaml
     services:
       port-update-helper:
         image: ghcr.io/chu3an/port-update-helper:latest
         container_name: port-update-helper
+        environment:
+          - QB_URL=${QB_URL}
+          - QB_USERNAME=${QB_USERNAME}
+          - QB_PASSWORD=${QB_PASSWORD}
+          - GT_URL=${GT_URL}
+          - GT_USERNAME=${GT_USERNAME}
+          - GT_PASSWORD=${GT_PASSWORD}
+          - CHK_INTERVAL=${CHK_INTERVAL:-5}
+          - TZ=${TZ:-Asia/Taipei}
         ports:
           - 9080:9080
-        env_file:
-          - .env
         restart: on-failure:5
         logging:
           driver: 'json-file'
