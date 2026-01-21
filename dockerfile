@@ -15,7 +15,7 @@ RUN \
     pip install fastapi uvicorn requests && \
     chmod +x /entrypoint
 
-ENV TZ=Asia/Tokyo
+ENV TZ=Asia/Taipei
 
 EXPOSE 9080
 

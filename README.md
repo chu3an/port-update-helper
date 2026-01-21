@@ -15,12 +15,16 @@ Now powered by **FastAPI** for better performance and **Tini** for proper proces
 > Please excuse any imperfections.
 > Be cautious if you use this in a production environment.
 
-# Explain
+> [!NOTE]
+> 2026 UPDATE
+> This repo is also my opencode practice project
+> I use opencode to replace Flask with fastapi, and fix 0 port issue
 
-1. When Gluetun port changed, `curl -X POST` to this container
-2. Get new port number via Gluetun API
-3. Post new port number to qBittorrent API
-4. Check the port number regularly (via internal cron)
+## Explain
+
+1. Cronjob trigger with setting interval (default 5 min)
+2. Get fowarded port from Gluetun API
+3. Update port number to qBittorrent API
 
 ![img](/assets/PortUpdateHelper.png)
 
@@ -38,14 +42,7 @@ Replace the following IP address, username, and password with your own.
     username = "username"
     password = "password"
     ```
-2.  Add a enviroment variable to Gluetun
-    ```yaml
-    VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh -c "curl -X POST 192.168.X.X:9080"
-    ```
-3.  Run this container (docker-compose)
-    You can use the provided `docker-compose.yaml` and `.env` file.
-    
-    1. Create a `.env` file (see `example.env`):
+2. Create `.env` file (see `example.env`)
     ```ini
     QB_URL=http://192.168.X.X:8080
     QB_USERNAME=username
@@ -56,8 +53,7 @@ Replace the following IP address, username, and password with your own.
     CHK_INTERVAL=5
     TZ=Asia/Tokyo
     ```
-
-    2. Run with docker-compose:
+3. Create `docker-compose.yaml` :
     ```yaml
     services:
       port-update-helper:
@@ -67,21 +63,26 @@ Replace the following IP address, username, and password with your own.
           - 9080:9080
         env_file:
           - .env
-        restart: unless-stopped
+        restart: on-failure:5
+        logging:
+          driver: 'json-file'
+          options:
+            max-size: '1M'
+            max-file: '5'
     ```
 
-    Environment Variables
-    | Env         | Description | Default |
-    |-------------|---|---|
-    | CHK_INTERVAL | Check interval time (minutes) | 5 |
-    | QB_URL      | qBittorrent URL  | |
-    | QB_USERNAME | Username of qBittorrent | |
-    | QB_PASSWORD | Password of qBittorrent | |
-    | GT_URL      | Gluetun control server URL | |
-    | GT_USERNAME | Username of Gluetun | |
-    | GT_PASSWORD | Password of Gluetun | |
-    | TZ          | Specify a timezone to use ([reference](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List)) | Asia/Tokyo |
+Environment Variables
+| Env         | Description | Default |
+|-------------|---|---|
+| CHK_INTERVAL | Check interval time (minutes) | 5 |
+| QB_URL      | qBittorrent URL  | |
+| QB_USERNAME | Username of qBittorrent | |
+| QB_PASSWORD | Password of qBittorrent | |
+| GT_URL      | Gluetun control server URL | |
+| GT_USERNAME | Username of Gluetun control server | |
+| GT_PASSWORD | Password of Gluetun control server | |
+| TZ          | Specify a timezone to use ([reference](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List)) | Asia/Taipei |
         
-# License
+## License
 
 This repo is licensed under MIT license

@@ -1,6 +1,8 @@
+---
 services:
   port-update-helper:
-    build: .
+    # build: .
+    image: ghcr.io/chu3an/port-update-helper:latest
     container_name: port-update-helper
     environment:
       - QB_URL=${QB_URL}
@@ -10,5 +12,12 @@ services:
       - GT_USERNAME=${GT_USERNAME}
       - GT_PASSWORD=${GT_PASSWORD}
       - CHK_INTERVAL=${CHK_INTERVAL:-5}
-      - TZ=${TZ:-Asia/Tokyo}
-    restart: unless-stopped
+      - TZ=${TZ:-Asia/Taipei}
+    ports:
+      - 9080:9080
+    restart: on-failure:5
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '1M'
+        max-file: '5'
