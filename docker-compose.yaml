@@ -1,0 +1,14 @@
+services:
+  port-update-helper:
+    build: .
+    container_name: port-update-helper
+    environment:
+      - QB_URL=${QB_URL}
+      - QB_USERNAME=${QB_USERNAME}
+      - QB_PASSWORD=${QB_PASSWORD}
+      - GT_URL=${GT_URL}
+      - GT_USERNAME=${GT_USERNAME}
+      - GT_PASSWORD=${GT_PASSWORD}
+      - CHK_INTERVAL=${CHK_INTERVAL:-5}
+      - TZ=${TZ:-Asia/Tokyo}
+    restart: unless-stopped

@@ -11,13 +11,12 @@ COPY ./app /app
 COPY entrypoint /entrypoint
 
 RUN \
-    apk add --no-cache tzdata curl && \
-    pip install flask requests && \
-    chmod +x /entrypoint && \
-    chmod +x /app/routine.sh
+    apk add --no-cache tzdata curl tini && \
+    pip install fastapi uvicorn requests && \
+    chmod +x /entrypoint
 
 ENV TZ=Asia/Tokyo
 
 EXPOSE 9080
 
-ENTRYPOINT ["/entrypoint"]
+ENTRYPOINT ["/sbin/tini", "--", "/entrypoint"]

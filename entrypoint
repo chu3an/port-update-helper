@@ -1,4 +1,16 @@
 #!/bin/ash
 
-/app/routine.sh &
-python /app/app.py
+# Default check interval to 5 minutes if not set
+INTERVAL=${CHK_INTERVAL:-5}
+
+echo "Setting up cron job with interval: ${INTERVAL} minutes"
+
+# Write crontab
+echo "*/${INTERVAL} * * * * curl --silent -X POST http://127.0.0.1:9080/" > /etc/crontabs/root
+
+# Start cron daemon in background
+crond -b
+
+# Start FastAPI application
+echo "Starting Uvicorn..."
+exec uvicorn app:app --host 0.0.0.0 --port 9080
