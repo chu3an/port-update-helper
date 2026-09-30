@@ -77,8 +77,10 @@ class QBAPI:
             "/api/v2/auth/login",
             data={"username": self.username, "password": self.password},
         )
-        if response is not None and response.status_code == 200:
-            if response.text.strip() == "Ok.":
+        if response is not None:
+            if response.status_code == 204:
+                return True
+            if response.status_code == 200 and response.text.strip() == "Ok.":
                 return True
 
         if response is not None:
@@ -87,7 +89,7 @@ class QBAPI:
 
     def logout(self) -> bool:
         response = self._request("POST", "/api/v2/auth/logout")
-        success = response is not None and response.status_code == 200
+        success = response is not None and response.status_code in (200, 204)
         if response is not None and not success:
             log.warning("qBittorrent logout failed: %s", response_summary(response))
         self.session.cookies.clear()
@@ -127,7 +129,7 @@ class QBAPI:
             "/api/v2/app/setPreferences",
             data={"json": json.dumps({"listen_port": port})},
         )
-        if response is not None and response.status_code == 200:
+        if response is not None and response.status_code in (200, 204):
             return True
         if response is not None:
             log.error(

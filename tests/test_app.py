@@ -95,6 +95,29 @@ def test_qbittorrent_api_uses_matching_origin_and_correct_logout():
     api._request.assert_called_with("POST", "/api/v2/auth/logout")
 
 
+def test_qbittorrent_login_accepts_no_content_success():
+    api = helper.QBAPI("http://gluetun:8080", "user", "password", 10)
+    api._request = Mock(return_value=SimpleNamespace(status_code=204, text=""))
+
+    assert api.login() is True
+
+
+def test_qbittorrent_login_rejects_failed_responses():
+    api = helper.QBAPI("http://gluetun:8080", "user", "password", 10)
+    for status_code, body in ((200, "Fails."), (401, "")):
+        api._request = Mock(
+            return_value=SimpleNamespace(status_code=status_code, text=body)
+        )
+        assert api.login() is False
+
+
+def test_qbittorrent_logout_accepts_no_content_success():
+    api = helper.QBAPI("http://gluetun:8080", "user", "password", 10)
+    api._request = Mock(return_value=SimpleNamespace(status_code=204, text=""))
+
+    assert api.logout() is True
+
+
 def test_qbittorrent_set_port_uses_json_payload():
     api = helper.QBAPI("http://gluetun:8080", "user", "password", 10)
     api._request = Mock(return_value=SimpleNamespace(status_code=200, text=""))
@@ -102,3 +125,10 @@ def test_qbittorrent_set_port_uses_json_payload():
     assert api.set_port(53503) is True
     payload = api._request.call_args.kwargs["data"]["json"]
     assert json.loads(payload) == {"listen_port": 53503}
+
+
+def test_qbittorrent_set_port_accepts_no_content_success():
+    api = helper.QBAPI("http://gluetun:8080", "user", "password", 10)
+    api._request = Mock(return_value=SimpleNamespace(status_code=204, text=""))
+
+    assert api.set_port(53503) is True

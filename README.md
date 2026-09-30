@@ -29,6 +29,8 @@ Now powered by **FastAPI** for better performance and **Tini** for proper proces
 An initial synchronization also runs during application startup. Startup fails with
 a diagnostic error if either API cannot be reached or authenticated, allowing the
 container restart policy to retry after a transient dependency failure.
+The helper accepts both the legacy `200 Ok.` and newer `204 No Content`
+qBittorrent Web API success responses.
 
 ![img](/assets/PortUpdateHelper.png)
 

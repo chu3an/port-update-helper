@@ -117,12 +117,13 @@ No formal linter is configured in CI, but agents should adhere to:
 
 ### qBittorrent API (v2)
 - **Login**: `POST /api/v2/auth/login` (application/x-www-form-urlencoded: `username`, `password`)
-  - Success: `200 OK` body `Ok.`
+  - Success: legacy `200 OK` body `Ok.` or `204 No Content`; invalid credentials may return `401`
 - **Get Preferences**: `GET /api/v2/app/preferences`
   - Response: JSON `{"listen_port": 12345, ...}`
 - **Set Preferences**: `POST /api/v2/app/setPreferences`
   - Data: `json={"listen_port": 12345}`
-- **Logout**: `POST /api/v2/auth/logout` (Code uses `.../login` for logout in current implementation, verify if this needs fix in future)
+  - Success: `200 OK` or `204 No Content`
+- **Logout**: `POST /api/v2/auth/logout` (`200 OK` or `204 No Content` on success)
 
 ## 6. Common Tasks Checklist
 
