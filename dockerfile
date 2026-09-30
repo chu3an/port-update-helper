@@ -19,4 +19,7 @@ ENV TZ=Asia/Taipei
 
 EXPOSE 9080
 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl --fail --silent --show-error --max-time 3 http://127.0.0.1:9080/health >/dev/null || exit 1
+
 ENTRYPOINT ["/sbin/tini", "--", "/entrypoint"]

@@ -22,9 +22,13 @@ Now powered by **FastAPI** for better performance and **Tini** for proper proces
 
 ## Explain
 
-1. Cronjob trigger with setting interval (default 5 min)
-2. Get fowarded port from Gluetun API
-3. Update port number to qBittorrent API
+1. A cron job triggers a synchronization at the configured interval (5 minutes by default).
+2. The helper reads the forwarded port from Gluetun's control API.
+3. The helper logs in to qBittorrent, updates the listening port when needed, and verifies the saved value.
+
+An initial synchronization also runs during application startup. Startup fails with
+a diagnostic error if either API cannot be reached or authenticated, allowing the
+container restart policy to retry after a transient dependency failure.
 
 ![img](/assets/PortUpdateHelper.png)
 
@@ -67,6 +71,7 @@ Replace the following IP address, username, and password with your own.
           - GT_USERNAME=${GT_USERNAME}
           - GT_PASSWORD=${GT_PASSWORD}
           - CHK_INTERVAL=${CHK_INTERVAL:-5}
+          - REQUEST_TIMEOUT=${REQUEST_TIMEOUT:-10}
           - TZ=${TZ:-Asia/Taipei}
         ports:
           - 9080:9080
@@ -81,7 +86,8 @@ Replace the following IP address, username, and password with your own.
 Environment Variables
 | Env         | Description | Default |
 |-------------|---|---|
-| CHK_INTERVAL | Check interval time (minutes) | 5 |
+| CHK_INTERVAL | Check interval time in whole minutes (1-59) | 5 |
+| REQUEST_TIMEOUT | Timeout for each API request in seconds | 10 |
 | QB_URL      | qBittorrent URL  | |
 | QB_USERNAME | Username of qBittorrent | |
 | QB_PASSWORD | Password of qBittorrent | |
@@ -89,6 +95,18 @@ Environment Variables
 | GT_USERNAME | Username of Gluetun control server | |
 | GT_PASSWORD | Password of Gluetun control server | |
 | TZ          | Specify a timezone to use ([reference](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List)) | Asia/Taipei |
+
+## Compose startup ordering
+
+When this helper is deployed with Gluetun and qBittorrent, use health-based
+dependencies rather than the short `depends_on` syntax. The intended chain is:
+
+1. Gluetun is healthy and `/tmp/gluetun/forwarded_port` contains a non-zero port.
+2. qBittorrent starts and its WebUI healthcheck succeeds.
+3. Port Update Helper starts and performs its initial synchronization.
+
+The healthchecks belong in the three-service deployment Compose file; the
+standalone Compose example above only starts this helper.
         
 ## License
 

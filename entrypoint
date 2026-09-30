@@ -1,12 +1,26 @@
 #!/bin/ash
 
+set -eu
+
 # Default check interval to 5 minutes if not set
 INTERVAL=${CHK_INTERVAL:-5}
+
+case "$INTERVAL" in
+    ''|*[!0-9]*)
+        echo "CHK_INTERVAL must be an integer from 1 to 59" >&2
+        exit 1
+        ;;
+esac
+
+if [ "$INTERVAL" -lt 1 ] || [ "$INTERVAL" -gt 59 ]; then
+    echo "CHK_INTERVAL must be an integer from 1 to 59" >&2
+    exit 1
+fi
 
 echo "Setting up cron job with interval: ${INTERVAL} minutes"
 
 # Write crontab
-echo "*/${INTERVAL} * * * * curl --silent -X POST http://127.0.0.1:9080/" > /etc/crontabs/root
+echo "*/${INTERVAL} * * * * curl --fail-with-body --silent --show-error --max-time 30 -X POST http://127.0.0.1:9080/ >/proc/1/fd/1 2>/proc/1/fd/2" > /etc/crontabs/root
 
 # Start cron daemon in background
 crond -b
